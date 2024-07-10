@@ -96,6 +96,7 @@ export default class WearRepository {
         return result.recordset;
     }
     getRandomPostsAsync = async (iduser,limit) => {
+        let postsfinal = [];
         let pool = await poolPromise;
         let historial = await pool.request().query(`select * from History where iduser = ${iduser}`);
         let brand = [];
@@ -103,25 +104,40 @@ export default class WearRepository {
         let search = [];
         for(let i = 0; i<historial.length; i++){
             if(historial[i].idBrand == null){
-                console.log("a")
                 search.push(historial[i].search);
             }else{
                 brand.push(historial[i].search);
             }
         }
-        
-        let stringsql = "where ";
+        // prendas por historial de busqueda
+        let stringsqlsearch = "where ";
         for(let i = 0; i<search.length; i++){
-            stringsql += `description like '%${search[i]}%' or `
+            stringsqlsearch += `description like '%${search[i]}%' or `
         }
-        if(stringsql.length == 6){
-            stringsql = "";
+        if(stringsqlsearch.length == 6){
+            stringsqlsearch = "";
         }else{
-            stringsql = stringsql.substring(0,(stringsql.length-4))
+            stringsqlsearch = stringsqlsearch.substring(0,(stringsqlsearch.length-4))
+        }
+        console.log(limit)
+        let postsbusqueda = await pool.request().query(`select top ${(limit/4)} * from posts ${stringsqlsearch}`);
+        
+        //setear en una variable los ids de las prendas para que no se repitan
+        let idprendas = [];
+        for(let i = 0; i<(postsbusqueda.recordset.length); i++){
+            idprendas.push(postsbusqueda.recordset[i].id)
+        }
+        console.log("aaa",idprendas)
+
+        // prendas por historial de marcas
+        let postsmarca = [];
+        let resultmarca;
+        for(let i = 0;i<(limit/4) ;i++){
+            resultmarca = await pool.request().query(`select top 1 * from posts where idCreator = ${brand[i]}`);
+            postsmarca.push(resultmarca.recordset)
+            idprendas.push(resultmarca.recordset.id)
         }
 
-        console.log(stringsql)
-        let result = await pool.request().query(`select top ${(limit/2)} * from posts ${stringsql}`);
 
         return result.recordset;
     }
