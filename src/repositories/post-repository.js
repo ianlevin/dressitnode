@@ -106,7 +106,7 @@ export default class WearRepository {
             if(historial[i].idBrand == null){
                 search.push(historial[i].search);
             }else{
-                brand.push(historial[i].search);
+                brand.push(historial[i].idBrand);
             }
         }
         // prendas por historial de busqueda
@@ -119,32 +119,41 @@ export default class WearRepository {
         }else{
             stringsqlsearch = stringsqlsearch.substring(0,(stringsqlsearch.length-4))
         }
-        console.log(limit)
         let postsbusqueda = await pool.request().query(`select top ${(limit/4)} * from posts ${stringsqlsearch} ORDER BY NEWID()`);
         let busqueda_record = postsbusqueda.recordset;
         //setear en una variable los ids de las prendas para que no se repitan
         let stringprendas = "";
         for(let i = 0; i<(postsbusqueda.recordset.length); i++){
-            stringprendas += `and id != ${postsbusqueda.recordset[i].id} `
+            stringprendas += ` and id != ${postsbusqueda.recordset[i].id}`
 
         }
-
         // prendas por historial de marcas
         let postsmarca = [];
         let resultmarca;
-        for(let i = 0;i<(limit/4) ;i++){
-            resultmarca = await pool.request().query(`select top 1 * from posts where idCreator = ${brand[i]} ${stringprendas} ORDER BY NEWID()`);
-            postsmarca.push(resultmarca.recordset)
-            stringprendas += `and id != ${resultmarca.recordset.id} `
+        // string con las marcas del historial
+        let string_marcas = "";
+        for(let i = 0;i<brand.length ;i++){
+            string_marcas += `idCreator = ${brand[i]} or `
+        }
+        string_marcas = string_marcas.substring(0,(string_marcas.length-3))
+
+        resultmarca = await pool.request().query(`select top ${limit/4} * from posts where ${string_marcas}${stringprendas} ORDER BY NEWID()`);
+        postsmarca = resultmarca.recordset;
+        //agregar los id en el string para que no se repitan los posts
+        for(let i = 0; i<(postsmarca.length); i++){
+            stringprendas += ` and id != ${postsbusqueda.recordset[i].id}`
         }
 
+        console.log(`select top ${limit/2} * from posts where id != 1 ${stringprendas} ORDER BY NEWID()`)
         // prendas random que quedan
         let prendas_faltantes = await pool.request().query(`select top ${limit/2} * from posts where id != 1 ${stringprendas} ORDER BY NEWID()`)
-        let faltantes_record = prendas.recordset;
+        let faltantes_record = prendas_faltantes.recordset;
 
         // por busqueda: busqueda_record, por marca: postsmarca, faltantes random: faltantes_record
-        
 
-        return result.recordset;
+        let vector = [...busqueda_record, ...postsmarca,...faltantes_record]
+
+        return vector;
+
     }
 }
