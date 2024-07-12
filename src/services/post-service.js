@@ -25,9 +25,9 @@ export default class WearService {
         return returnArray;
     }
 
-    getSearchAsync = async (buscado) => {
+    getSearchAsync = async (buscado,id) => {
         const repo = new PostRepository();
-        let returnArray = await repo.getSearchAsync(buscado);
+        let returnArray = await repo.getSearchAsync(buscado,id);
         return returnArray;
     }
 

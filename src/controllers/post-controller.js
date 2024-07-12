@@ -68,9 +68,9 @@ router.post('', async (req, res) => {
     }
 })
 
-router.get('/search/:buscado', async (req, res) => {
+router.get('/search/:buscado/:id', async (req, res) => {
     let respuesta;
-    const returnArray = await svcw.getSearchAsync(req.params.buscado);
+    const returnArray = await svcw.getSearchAsync(req.params.buscado,req.params.id);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
     }

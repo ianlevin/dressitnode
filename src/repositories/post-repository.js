@@ -75,16 +75,63 @@ export default class WearRepository {
         return result.recordset;
     }
 
-    getByIdAsync = async (table_name, id) => {
+    getByIdAsync = async (table_name, id, id_user) => {
         let pool = await poolPromise;
         let result = await pool.request()
             .input('pid', sql.Int, id)
             .query(`SELECT * FROM ${table_name} WHERE id = @pid`);
+
+        let marca = await pool.request().query(`
+        select username from Users
+        left join Posts on Users.id = posts.idCreator
+        where posts.id = ${id}
+        `)
+
+        let historia = await pool.request().query(`
+        IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id_user}) >= 20
+            BEGIN
+                
+                DELETE FROM dbo.History
+                WHERE idUser = ${id_user}
+                AND (id) = (
+                    SELECT TOP 1 id FROM dbo.History 
+                    WHERE idUser = ${id_user}
+                    ORDER BY id ASC 
+                );
+            END
+            
+            
+            INSERT INTO dbo.History (idUser, search)
+            VALUES (${id}, '${marca.recordset[0].username}'
+        `);
+
         return result.recordset;
     }
-    getSearchAsync = async (buscado) => {
+    getSearchAsync = async (buscado,id) => {
+        console.log(buscado)
+        console.log(id)
         let pool = await poolPromise;
-        let result = await pool.request().query(`select * from Posts where name like '%${buscado}%' OR description like '%${buscado}%'`);
+        let result;
+        if(buscado.length >= 4){
+            result = await pool.request().query(`
+        IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) >= 20
+            BEGIN
+                
+                DELETE FROM dbo.History
+                WHERE idUser = ${id}
+                AND (id) = (
+                    SELECT TOP 1 id FROM dbo.History 
+                    WHERE idUser = ${id}
+                    ORDER BY id ASC 
+                );
+            END
+            
+            
+            INSERT INTO dbo.History (idUser, search)
+            VALUES (${id}, '${buscado}');`);
+        }
+        
+        result = await pool.request().query(`select * from Posts where name like '%${buscado}%' OR description like '%${buscado}%'`);
 
         return result.recordset;
     }
