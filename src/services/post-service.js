@@ -37,9 +37,9 @@ export default class WearService {
         return returnArray;
     }
 
-    getRandomPostsAsync= async (iduser, limit) => {
+    getRandomPostsAsync= async (iduser) => {
         const repo = new PostRepository();
-        let returnArray = await repo.getRandomPostsAsync(iduser, limit);
+        let returnArray = await repo.getRandomPostsAsync(iduser);
         return returnArray;
     }
 }

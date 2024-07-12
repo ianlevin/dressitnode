@@ -6,9 +6,9 @@ const router = Router();
 const svcw = new PostService();
 const svcc = new CommonService();
 
-router.get('/random/:iduser/:limit', async (req, res) => {
+router.get('/random/:iduser', async (req, res) => {
     let respuesta;
-    const returnArray = await svcw.getRandomPostsAsync(req.params.iduser,req.params.limit);
+    const returnArray = await svcw.getRandomPostsAsync(req.params.iduser);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
     }
