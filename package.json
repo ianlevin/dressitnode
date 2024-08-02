@@ -23,6 +23,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
+    "google-auth-library": "^9.13.0",
     "http-status-codes": "^2.3.0",
     "init": "^0.1.2",
     "mssql": "^10.0.2",

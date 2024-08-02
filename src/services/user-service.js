@@ -2,15 +2,30 @@ import UserRepository from "../repositories/user-repository.js";
 import crypto from 'crypto'
 
 export default class UserService{
-    getAllSync = async () => {
+    Login = async (user) => {
         const repo = new UserRepository();
-        let returnArray = await repo.getAllSync();
+        let returnArray = await repo.Login(user);
         return returnArray;
     }
-    createAsync = async (entity) => {
+    Register = async (user) => {
         const repo = new UserRepository();
-        entity.password = crypto.createHash('sha256').update(entity.password).digest('hex');
-        let returnArray = await repo.createAsync(entity);
+        user.pass = crypto.createHash('sha256').update(user.pass).digest('hex');
+        let returnArray = await repo.Register(user);
+        return returnArray;
+    }
+    userExist =async (username) => {
+        const repo = new UserRepository();
+        let returnArray = await repo.userExist(username);
+        return returnArray;
+    }
+    findUserByGoogleIdOrEmail = async (googleId,email) => {
+        const repo = new UserRepository();
+        let returnArray = await repo.findUserByGoogleIdOrEmail(googleId,email);
+        return returnArray;
+    }
+    registerGoogleUser = async (user) => {
+        const repo = new UserRepository();
+        let returnArray = await repo.registerGoogleUser(user);
         return returnArray;
     }
 }

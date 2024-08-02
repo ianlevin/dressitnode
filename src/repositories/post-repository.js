@@ -112,11 +112,12 @@ export default class WearRepository {
         console.log(id)
         let pool = await poolPromise;
         let result;
-        if(buscado.length >= 4){
+        result = await pool.request().query(`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`)
+        console.log(result)
+        if(result.recordset.length >0){
             result = await pool.request().query(`
-        IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) >= 20
+            IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) = 20
             BEGIN
-                
                 DELETE FROM dbo.History
                 WHERE idUser = ${id}
                 AND (id) = (
@@ -126,10 +127,12 @@ export default class WearRepository {
                 );
             END
             
-            
             INSERT INTO dbo.History (idUser, search)
-            VALUES (${id}, '${buscado}');`);
+            VALUES (${id}, '${buscado}');
+            `);
         }
+        
+            
         
         result = await pool.request().query(`select * from Posts where name like '%${buscado}%' OR description like '%${buscado}%'`);
 
