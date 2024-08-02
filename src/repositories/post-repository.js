@@ -116,19 +116,33 @@ export default class WearRepository {
         console.log(result)
         if(result.recordset.length >0){
             result = await pool.request().query(`
-            IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) = 20
-            BEGIN
-                DELETE FROM dbo.History
+            IF NOT EXISTS (
+                SELECT 1
+                FROM dbo.History
                 WHERE idUser = ${id}
-                AND (id) = (
-                    SELECT TOP 1 id FROM dbo.History 
+                AND search = '${buscado}'
+            )
+            BEGIN
+                -- Si el número de registros es exactamente 20, actualiza el registro más antiguo
+                IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) = 20
+                BEGIN
+                    UPDATE dbo.History
+                    SET search = '${buscado}'
                     WHERE idUser = ${id}
-                    ORDER BY id ASC 
-                );
+                    AND id = (
+                        SELECT TOP 1 id
+                        FROM dbo.History
+                        WHERE idUser = ${id}
+                        ORDER BY id ASC
+                    );
+                END
+                ELSE
+                BEGIN
+                    -- Si el número de registros es menor de 20, inserta un nuevo registro
+                    INSERT INTO dbo.History (idUser, search)
+                    VALUES (${id}, '${buscado}');
+                END
             END
-            
-            INSERT INTO dbo.History (idUser, search)
-            VALUES (${id}, '${buscado}');
             `);
         }
         
