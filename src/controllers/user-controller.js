@@ -73,9 +73,12 @@ router.post('/google-login', async (req, res) => {
     }
 
     // Buscar al usuario por Google ID o email
-    let user = await svc.findUserByGoogleIdOrEmail(googleId, email);
-
-    if (!user) {
+    let user = await svc.findUserByGoogleId(googleId);
+    let userByName = await svc.findUserByNameOrEmail(name,email)
+    if(user) {
+        return res.status(200).json({ message: 'Login successful', user });
+    }
+    if (!userByName) {
         // Registrar nuevo usuario
         user = {
             googleId,
@@ -86,6 +89,12 @@ router.post('/google-login', async (req, res) => {
             password: crypto.randomBytes(20).toString('hex')
         };
         await svc.registerGoogleUser(user);
+    } else {
+        if(userByName.username == name) {
+            return res.status(400).json({ message: 'Ya hay un user con ese nombre Google'});
+        } else if(userByName.email == email) {
+            return res.status(400).json({ message: 'Mail ya registrado'});
+        }
     }
 
     // Aquí puedes generar y devolver un token JWT para la sesión, si es necesario

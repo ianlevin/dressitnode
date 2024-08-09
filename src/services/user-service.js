@@ -18,9 +18,14 @@ export default class UserService{
         let returnArray = await repo.userExist(username);
         return returnArray;
     }
-    findUserByGoogleIdOrEmail = async (googleId,email) => {
+    findUserByGoogleId = async (googleId) => {
         const repo = new UserRepository();
-        let returnArray = await repo.findUserByGoogleIdOrEmail(googleId,email);
+        let returnArray = await repo.findUserByGoogleId(googleId);
+        return returnArray;
+    }
+    findUserByNameOrEmail = async (name,email) => {
+        const repo = new UserRepository();
+        let returnArray = await repo.findUserByNameOrEmail(name,email);
         return returnArray;
     }
     registerGoogleUser = async (user) => {

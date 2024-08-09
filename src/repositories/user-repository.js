@@ -25,14 +25,21 @@ export default class UserRepository{
         let result = await pool.request().input("pusername",sql.VarChar,username).query("SELECT * FROM Users where username = @pusername");
         return result.recordset
     }
-    findUserByGoogleIdOrEmail = async (googleId, email) => {
+    findUserByGoogleId = async (googleId) => {
         let pool = await sql.connect(config);
         let result = await pool.request()
             .input('googleId', sql.VarChar, googleId)
-            .input('email', sql.VarChar, email)
-            .query("SELECT * FROM Users WHERE googleId = @googleId OR email = @email");
+            .query("SELECT * FROM Users WHERE googleId = @googleId");
         return result.recordset[0];
     };
+    findUserByNameOrEmail = async(name,email)=> {
+        let pool = await sql.connect(config);
+        let result = await pool.request()
+            .input('name', sql.VarChar, name)
+            .input('email', sql.VarChar, email)
+            .query("SELECT * FROM Users WHERE username = @name or email = @email");
+        return result.recordset[0];
+    }
 
     registerGoogleUser = async (user) => {
         let pool = await sql.connect(config);
