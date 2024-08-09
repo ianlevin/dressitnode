@@ -52,4 +52,9 @@ export default class UserRepository{
             .query("INSERT INTO Users (googleId, email, username, pfp, password) VALUES (@googleId, @email, @name, @imageUrl, @password)");
         return result.recordset;
     };
+    getUser = async (iduser) => {
+        let pool = await sql.connect(config);
+        let result = await pool.request().input('iduser',sql.Int,iduser).query(`SELECT username,pfp FROM Users WHERE id = @iduser`);
+        return result.recordset[0];
+    };
 }

@@ -76,16 +76,18 @@ export default class WearRepository {
     }
 
     getByIdAsync = async (table_name, id, id_user) => {
+        console.log(table_name,id,id_user)
         let pool = await poolPromise;
         let result = await pool.request()
             .input('pid', sql.Int, id)
             .query(`SELECT * FROM ${table_name} WHERE id = @pid`);
 
         let marca = await pool.request().query(`
-        select username from Users
+        select Users.id from Users
         left join Posts on Users.id = posts.idCreator
         where posts.id = ${id}
         `)
+        console.log("aaaaaa",marca.recordset[0])
 
         let historia = await pool.request().query(`
         IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id_user}) >= 20
@@ -101,19 +103,15 @@ export default class WearRepository {
             END
             
             
-            INSERT INTO dbo.History (idUser, search)
-            VALUES (${id}, '${marca.recordset[0].username}'
+            INSERT INTO dbo.History (idUser, idBrand)
+            VALUES (${id}, ${marca.recordset[0].id})
         `);
-
         return result.recordset;
     }
     getSearchAsync = async (buscado,id) => {
-        console.log(buscado)
-        console.log(id)
         let pool = await poolPromise;
         let result;
         result = await pool.request().query(`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`)
-        console.log(result)
         if(result.recordset.length >0){
             result = await pool.request().query(`
             IF NOT EXISTS (
@@ -124,7 +122,7 @@ export default class WearRepository {
             )
             BEGIN
                 -- Si el número de registros es exactamente 20, actualiza el registro más antiguo
-                IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) = 20
+                IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) = 20 AND (SELECT TOP 1 idBrand FROM dbo.History WHERE idUser = 2 ORDER BY id ASC) IS NULL
                 BEGIN
                     UPDATE dbo.History
                     SET search = '${buscado}'
