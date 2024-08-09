@@ -91,4 +91,14 @@ router.post('/google-login', async (req, res) => {
     // Aquí puedes generar y devolver un token JWT para la sesión, si es necesario
     res.status(200).json({ message: 'Login successful', user });
 });
+router.get('/getuser/:iduser', async (req, res) => {
+    let respuesta;
+    const resultadoUser = await svc.getUser(req.params.iduser)
+    if(resultadoUser != null){
+        respuesta = res.status(200).json(resultadoUser)
+    }else{
+        respuesta = res.status(404).json("")
+    }
+    return respuesta;
+});
 export default router;

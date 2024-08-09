@@ -108,12 +108,9 @@ export default class WearRepository {
         return result.recordset;
     }
     getSearchAsync = async (buscado,id) => {
-        console.log(buscado)
-        console.log(id)
         let pool = await poolPromise;
         let result;
         result = await pool.request().query(`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`)
-        console.log(result)
         if(result.recordset.length >0){
             result = await pool.request().query(`
             IF NOT EXISTS (
