@@ -35,6 +35,7 @@ router.get('', async (req, res) => {
 
 router.get('/:id/:iduser', async (req, res) => {
     let respuesta;
+    console.log("iduser",req.params.iduser)
     const returnArray = await svcw.getByIdAsync("Posts",req.params.id,req.params.iduser);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
@@ -68,9 +69,20 @@ router.post('', async (req, res) => {
     }
 })
 
-router.get('/search/:buscado/:id', async (req, res) => {
+router.get('/search/:buscado/:id/:limit', async (req, res) => {
     let respuesta;
-    const returnArray = await svcw.getSearchAsync(req.params.buscado,req.params.id);
+    const returnArray = await svcw.getSearchAsync(req.params.buscado,req.params.id,req.params.limit);
+    if (returnArray != null){
+        respuesta = res.status(200).json(returnArray);
+    }
+    else {
+        respuesta = res.status(500).send('Error interno.');
+    }
+    return respuesta;
+});
+router.get('/:buscado/:offset/:limit', async (req, res) => {
+    let respuesta;
+    const returnArray = await svcw.getOffsetAsync(req.params.buscado,req.params.offset,req.params.limit);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
     }

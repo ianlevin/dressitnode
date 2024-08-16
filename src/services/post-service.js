@@ -25,9 +25,9 @@ export default class WearService {
         return returnArray;
     }
 
-    getSearchAsync = async (buscado,id) => {
+    getSearchAsync = async (buscado,id,limit) => {
         const repo = new PostRepository();
-        let returnArray = await repo.getSearchAsync(buscado,id);
+        let returnArray = await repo.getSearchAsync(buscado,id,limit);
         return returnArray;
     }
 
@@ -40,6 +40,11 @@ export default class WearService {
     getRandomPostsAsync= async (iduser) => {
         const repo = new PostRepository();
         let returnArray = await repo.getRandomPostsAsync(iduser);
+        return returnArray;
+    }
+    getOffsetAsync = async (buscado,offset,limit) => {
+        const repo = new PostRepository();
+        let returnArray = await repo.getOffsetAsync(buscado,offset,limit);
         return returnArray;
     }
 }

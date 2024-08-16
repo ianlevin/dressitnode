@@ -76,7 +76,6 @@ export default class WearRepository {
     }
 
     getByIdAsync = async (table_name, id, id_user) => {
-        console.log(table_name,id,id_user)
         let pool = await poolPromise;
         let result = await pool.request()
             .input('pid', sql.Int, id)
@@ -87,7 +86,6 @@ export default class WearRepository {
         left join Posts on Users.id = posts.idCreator
         where posts.id = ${id}
         `)
-        console.log("aaaaaa",marca.recordset[0])
 
         let historia = await pool.request().query(`
         IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id_user}) >= 20
@@ -104,11 +102,11 @@ export default class WearRepository {
             
             
             INSERT INTO dbo.History (idUser, idBrand)
-            VALUES (${id}, ${marca.recordset[0].id})
+            VALUES (${id_user}, ${marca.recordset[0].id})
         `);
         return result.recordset;
     }
-    getSearchAsync = async (buscado,id) => {
+    getSearchAsync = async (buscado,id,limit) => {
         let pool = await poolPromise;
         let result;
         result = await pool.request().query(`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`)
@@ -121,7 +119,6 @@ export default class WearRepository {
                 AND search = '${buscado}'
             )
             BEGIN
-                -- Si el número de registros es exactamente 20, actualiza el registro más antiguo
                 IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id}) = 20 AND (SELECT TOP 1 idBrand FROM dbo.History WHERE idUser = 2 ORDER BY id ASC) IS NULL
                 BEGIN
                     UPDATE dbo.History
@@ -136,7 +133,6 @@ export default class WearRepository {
                 END
                 ELSE
                 BEGIN
-                    -- Si el número de registros es menor de 20, inserta un nuevo registro
                     INSERT INTO dbo.History (idUser, search)
                     VALUES (${id}, '${buscado}');
                 END
@@ -146,9 +142,13 @@ export default class WearRepository {
         
             
         
-        result = await pool.request().query(`select * from Posts where name like '%${buscado}%' OR description like '%${buscado}%'`);
+        const prendas = await pool.request().query(`select top ${limit}* from Posts where name like '%${buscado}%' OR description like '%${buscado}%'`);
+        const marcas = await pool.request().query(`select top 5 * from Users where username like '%${buscado}%'`)
 
-        return result.recordset;
+        const resultado ={
+
+        }
+        return prendas.recordset;
     }
 
     getPostByBrand = async (id) => {
