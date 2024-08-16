@@ -204,4 +204,10 @@ export default class WearRepository {
 
             return result.recordset;
     }
+    getOffsetAsync = async (buscado,offset,limit) => {
+        let pool = await poolPromise;
+        let result = await pool.request().query(`SELECT * FROM Posts where name like '%${buscado}%' OR description like '%${buscado}%' ORDER BY id OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`);
+
+        return result.recordset;
+    }
 }
