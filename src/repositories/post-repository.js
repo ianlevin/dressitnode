@@ -153,13 +153,18 @@ export default class WearRepository {
         return resultado;
     }
 
-    getPostByBrand = async (username) => {
-        console.log(username)
+    getPostByBrand = async (username,offset,limit) => {
+        console.log(username,offset,limit)
         let pool = await poolPromise;
-        let result = await pool.request().query(`select * from Posts 
-        where idCreator = (
-            select id from Users where username = '${username}'
-        )`);
+        let result = await pool.request().query(`
+        SELECT * FROM Posts 
+        WHERE idCreator = (
+            SELECT id FROM Users WHERE username = '${username}'
+        )
+        ORDER BY id DESC
+        OFFSET ${offset} ROWS
+        FETCH NEXT ${limit} ROWS ONLY;
+    `);
 
         return result.recordset;
     }

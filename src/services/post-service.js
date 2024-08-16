@@ -31,9 +31,9 @@ export default class WearService {
         return returnArray;
     }
 
-    getPostByBrand = async (username) => {
+    getPostByBrand = async (username,offset,limit) => {
         const repo = new PostRepository();
-        let returnArray = await repo.getPostByBrand(username);
+        let returnArray = await repo.getPostByBrand(username,offset,limit);
         return returnArray;
     }
 
