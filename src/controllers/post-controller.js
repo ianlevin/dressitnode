@@ -32,7 +32,17 @@ router.get('', async (req, res) => {
     }
     return respuesta;
 });
-
+router.get('/brand/:username', async (req, res) => {
+    let respuesta;
+    const returnArray = await svcw.getPostByBrand(req.params.username);
+    if (returnArray != null){
+        respuesta = res.status(200).json(returnArray);
+    }
+    else {
+        respuesta = res.status(500).send('Error interno.');
+    }
+    return respuesta;
+});
 router.get('/:id/:iduser', async (req, res) => {
     let respuesta;
     console.log("iduser",req.params.iduser)
@@ -46,17 +56,7 @@ router.get('/:id/:iduser', async (req, res) => {
     return respuesta;
 });
 
-router.get('/brand/:id', async (req, res) => {
-    let respuesta;
-    const returnArray = await svcw.getPostByBrand(req.params.id);
-    if (returnArray != null){
-        respuesta = res.status(200).json(returnArray);
-    }
-    else {
-        respuesta = res.status(500).send('Error interno.');
-    }
-    return respuesta;
-});
+
 
 router.post('', async (req, res) => {
     let respuesta;

@@ -151,9 +151,13 @@ export default class WearRepository {
         return prendas.recordset;
     }
 
-    getPostByBrand = async (id) => {
+    getPostByBrand = async (username) => {
+        console.log(username)
         let pool = await poolPromise;
-        let result = await pool.request().query(`select * from Posts where idBrand = ${id}`);
+        let result = await pool.request().query(`select * from Posts 
+        where idCreator = (
+            select id from Users where username = '${username}'
+        )`);
 
         return result.recordset;
     }

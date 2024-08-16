@@ -33,9 +33,9 @@ export default class UserService{
         let returnArray = await repo.registerGoogleUser(user);
         return returnArray;
     }
-    getUser = async (iduser) => {
+    getUser = async (username) => {
         const repo = new UserRepository();
-        let returnArray = await repo.getUser(iduser);
+        let returnArray = await repo.getUser(username);
         return returnArray;
     }
 }
