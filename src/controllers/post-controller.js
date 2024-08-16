@@ -32,9 +32,9 @@ router.get('', async (req, res) => {
     }
     return respuesta;
 });
-router.get('/brand/:username', async (req, res) => {
+router.get('/brand/:username/:offset/:limit', async (req, res) => {
     let respuesta;
-    const returnArray = await svcw.getPostByBrand(req.params.username);
+    const returnArray = await svcw.getPostByBrand(req.params.username,req.params.offset,req.params.limit);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
     }
