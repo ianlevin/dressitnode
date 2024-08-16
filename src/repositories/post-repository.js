@@ -76,7 +76,6 @@ export default class WearRepository {
     }
 
     getByIdAsync = async (table_name, id, id_user) => {
-        console.log(table_name,id,id_user)
         let pool = await poolPromise;
         let result = await pool.request()
             .input('pid', sql.Int, id)
@@ -87,7 +86,6 @@ export default class WearRepository {
         left join Posts on Users.id = posts.idCreator
         where posts.id = ${id}
         `)
-        console.log("aaaaaa",marca.recordset[0])
 
         let historia = await pool.request().query(`
         IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = ${id_user}) >= 20
@@ -151,9 +149,13 @@ export default class WearRepository {
         return result.recordset;
     }
 
-    getPostByBrand = async (id) => {
+    getPostByBrand = async (username) => {
+        console.log(username)
         let pool = await poolPromise;
-        let result = await pool.request().query(`select * from Posts where idBrand = ${id}`);
+        let result = await pool.request().query(`select * from Posts 
+        where idCreator = (
+            select id from Users where username = '${username}'
+        )`);
 
         return result.recordset;
     }
