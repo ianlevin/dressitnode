@@ -208,7 +208,6 @@ export default class WearRepository {
                 SELECT * FROM PostsFaltantes
             ) AS CombinedPosts
             ORDER BY NEWID();`);
-
             return result.recordset;
     }
     getOffsetAsync = async (buscado,offset,limit) => {
