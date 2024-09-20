@@ -20,7 +20,6 @@ export default class ScrapingService {
                 return [];
             }
 
-            // Esperar a que el selector principal de productos esté disponible
             await page.waitForSelector('.vtex-search-result-3-x-galleryItem.vtex-search-result-3-x-galleryItem--normal.vtex-search-result-3-x-galleryItem--list.pa4', { timeout: 5000 });
 
             // Desplazamiento hasta el final de la página
@@ -28,30 +27,29 @@ export default class ScrapingService {
             let scrollActual = 0;
 
             do {
-                // Desplazarse hacia abajo
+                anteriorScroll = scrollActual; // Guardamos el scroll anterior
                 scrollActual = await page.evaluate(() => {
                     window.scrollBy(0, window.innerHeight);
-                    return document.body.scrollHeight;
+                    return document.body.scrollHeight; // Retornamos la nueva altura del documento
                 });
 
-                // Esperar un poco para que se carguen más elementos
-                await setTimeout(1000);
+                await setTimeout(1000); // Espera para que se carguen más elementos
 
-            } while (scrollActual > anteriorScroll && (anteriorScroll = scrollActual));
-            console.log("a")
-            // Obtener productos después de hacer scroll
-            const nuevosProductos = await page.evaluate(() => {
-                const items = Array.from(document.querySelectorAll('.vtex-search-result-3-x-galleryItem.vtex-search-result-3-x-galleryItem--normal.vtex-search-result-3-x-galleryItem--list.pa4'));
-                return items.map(item => ({
-                    img: item.querySelector('.topperio-product-summary-slider-0-x-image.topperio-product-summary-slider-0-x-loaded')?.src || 'Sin imagen',
-                    link: document.querySelector('.vtex-product-summary-2-x-clearLink.vtex-product-summary-2-x-clearLink--product-card.h-100.flex.flex-column')?.href || 'Sin enlace',
-                    title: item.querySelector('.vtex-product-summary-2-x-productNameContainer.mv0.vtex-product-summary-2-x-nameWrapper.overflow-hidden.c-on-base.f5')?.innerText || 'Sin nombre',
-                    descripcion: "",
-                    precio: (item.querySelector('.vtex-product-price-1-x-currencyInteger')?.innerText || 'Sin precio')+"000"
-                }));
-            });
+                // Obtener productos después de hacer scroll
+                const nuevosProductos = await page.evaluate(() => {
+                    const items = Array.from(document.querySelectorAll('.vtex-search-result-3-x-galleryItem.vtex-search-result-3-x-galleryItem--normal.vtex-search-result-3-x-galleryItem--list.pa4'));
+                    return items.map(item => ({
+                        img: item.querySelector('.topperio-product-summary-slider-0-x-image.topperio-product-summary-slider-0-x-loaded')?.src || 'Sin imagen',
+                        link: item.querySelector('.vtex-product-summary-2-x-clearLink.vtex-product-summary-2-x-clearLink--product-card.h-100.flex.flex-column a')?.href || 'Sin enlace',
+                        title: item.querySelector('.vtex-product-summary-2-x-productNameContainer.mv0.vtex-product-summary-2-x-nameWrapper.overflow-hidden.c-on-base.f5')?.innerText || 'Sin nombre',
+                        descripcion: "",
+                        precio: (item.querySelector('.vtex-product-price-1-x-currencyInteger')?.innerText || 'Sin precio') + "000"
+                    }));
+                });
 
-            productos.push(...nuevosProductos); // Agrega todos los productos encontrados
+                productos.push(...nuevosProductos); // Agrega todos los nuevos productos encontrados
+
+            } while (scrollActual > anteriorScroll); // Continuar hasta que no haya más contenido
 
             console.log(productos); // Muestra los productos obtenidos
             return productos;
