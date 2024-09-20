@@ -25,7 +25,7 @@ router.get("/agregarNike",async (req,res)=> {
     data = data.filter(element => !(element==null));
     data = data.map(element=> {
         return {
-            idCreator: 1,
+            idCreator: 4,
             description : element.descripcion,
             price : parseInt(element.precio),
             creationDate : new Date(),

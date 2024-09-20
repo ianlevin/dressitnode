@@ -1,7 +1,12 @@
 import puppeteer from 'puppeteer';
 import {setTimeout} from "node:timers/promises";
+import ScrapingRepository from "../repositories/scraping-repository.js";
 export default class ScrapingService {
-    // Otras funciones...
+    agregarNike = async (data) => {
+        const repo = new ScrapingRepository();
+        let returnArray = await repo.agregarNike(data);
+        return returnArray;
+    }
 
     obtenerProductosDeRopa = async (url) => {
         const browser = await puppeteer.launch();
@@ -33,14 +38,16 @@ export default class ScrapingService {
                 await setTimeout(1000);
 
             } while (scrollActual > anteriorScroll && (anteriorScroll = scrollActual));
-
+            console.log("a")
             // Obtener productos después de hacer scroll
             const nuevosProductos = await page.evaluate(() => {
                 const items = Array.from(document.querySelectorAll('.vtex-search-result-3-x-galleryItem.vtex-search-result-3-x-galleryItem--normal.vtex-search-result-3-x-galleryItem--list.pa4'));
                 return items.map(item => ({
-                    nombre: item.querySelector('.vtex-product-summary-2-x-productNameContainer.mv0.vtex-product-summary-2-x-nameWrapper.overflow-hidden.c-on-base.f5')?.innerText || 'Sin nombre',
-                    precio: item.querySelector('.vtex-product-price-1-x-currencyInteger')?.innerText || 'Sin precio',
-                    imagen: item.querySelector('.topperio-product-summary-slider-0-x-image.topperio-product-summary-slider-0-x-loaded')?.src || 'Sin imagen',
+                    img: item.querySelector('.topperio-product-summary-slider-0-x-image.topperio-product-summary-slider-0-x-loaded')?.src || 'Sin imagen',
+                    link: document.querySelector('.vtex-product-summary-2-x-clearLink.vtex-product-summary-2-x-clearLink--product-card.h-100.flex.flex-column')?.href || 'Sin enlace',
+                    title: item.querySelector('.vtex-product-summary-2-x-productNameContainer.mv0.vtex-product-summary-2-x-nameWrapper.overflow-hidden.c-on-base.f5')?.innerText || 'Sin nombre',
+                    descripcion: "",
+                    precio: (item.querySelector('.vtex-product-price-1-x-currencyInteger')?.innerText || 'Sin precio')+"000"
                 }));
             });
 
