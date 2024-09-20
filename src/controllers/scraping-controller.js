@@ -3,6 +3,11 @@ import {Router} from 'express';
 import ScrapingService from "../services/scraping-service.js"
 const svc = new ScrapingService();
 const router = Router();
+router.get('/nueva', async (req, res) => {
+    let respuesta;
+    let produtos = await svc.obtenerProductosDeRopa("https://www.topper.com.ar/indumentaria/remeras/hombre?O=OrderByReleaseDateDESC&PS=12&map=c,c,specificationFilter_28&order=OrderByPriceASC")
+    respuesta = res.status(200).send(produtos)
+});
 router.get('', (req, res) => {
     // Obtener offset y límite de la consulta
     const offset = parseInt(req.query.offset) || 0;
