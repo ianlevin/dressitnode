@@ -107,7 +107,6 @@ export default class WearRepository {
         return result.recordset;
     }
     getSearchAsync = async (buscado,id,limit) => {
-        
         let pool = await poolPromise;
         let result;
         result = await pool.request().query(`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`)
@@ -143,14 +142,15 @@ export default class WearRepository {
         
             
         
-        const prendas = await pool.request().query(`SELECT TOP ${limit} Posts.*
-        FROM Posts
-        LEFT JOIN ColorTag ON Posts.id = ColorTag.idPost
-        LEFT JOIN Colors ON ColorTag.idColor = Colors.id
-        WHERE 
-            Posts.name LIKE '%${buscado}%' OR 
-            Posts.description LIKE '%${buscado}%' OR 
-            Colors.nombre LIKE '%${buscado}%';
+        const prendas = await pool.request().query(
+            `SELECT TOP ${limit} Posts.*
+                FROM Posts
+                LEFT JOIN ColorTag ON Posts.id = ColorTag.idPost
+                LEFT JOIN Colors ON ColorTag.idColor = Colors.id
+                WHERE 
+                    Posts.name LIKE '%${buscado}%' OR 
+                    Posts.description LIKE '%${buscado}%' OR 
+                    Colors.nombre LIKE '%${buscado}%';
         `);
         const marcas = await pool.request().query(`select top 5 * from Users where username like '%${buscado}%'`)
 
