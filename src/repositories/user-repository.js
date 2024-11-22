@@ -57,4 +57,12 @@ export default class UserRepository{
         let result = await pool.request().input('username',sql.VarChar,username).query(`SELECT username,pfp FROM Users WHERE username = @username`);
         return result.recordset[0];
     };
+    postToHistory = async (idPost, idUser) => {
+        let pool = await sql.connect(config);
+        let result = await pool.request()
+            .input('idUser', sql.Int, idUser)
+            .input('idPost', sql.Int, idPost)
+            .query('INSERT INTO PostsXUser (idUser, idPost) VALUES (@idUser, @idPost)');
+        return result.rowsAffected;
+    }
 }

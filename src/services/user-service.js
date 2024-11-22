@@ -13,6 +13,11 @@ export default class UserService{
         let returnArray = await repo.Register(user);
         return returnArray;
     }
+    postToHistory = async (idPost, idUser) => {
+        const repo = new UserRepository();
+        let returnObject = await repo.postToHistory(idPost, idUser);
+        return returnObject;
+    }
     userExist =async (username) => {
         const repo = new UserRepository();
         let returnArray = await repo.userExist(username);

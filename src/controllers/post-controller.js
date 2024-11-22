@@ -18,9 +18,6 @@ router.get('/random/:iduser', async (req, res) => {
     return respuesta;
 });
 
-
-
-
 router.get('', async (req, res) => {
     let respuesta;
     const returnArray = await svcw.getFilterAsync(req.query.generos,req.query.precios,req.query.colores,req.query.prendas,req.query.offset,req.query.limit);
@@ -32,6 +29,7 @@ router.get('', async (req, res) => {
     }
     return respuesta;
 });
+
 router.get('/brand/:username/:offset/:limit', async (req, res) => {
     let respuesta;
     const returnArray = await svcw.getPostByBrand(req.params.username,req.params.offset,req.params.limit);
@@ -43,6 +41,7 @@ router.get('/brand/:username/:offset/:limit', async (req, res) => {
     }
     return respuesta;
 });
+
 router.get('/:id/:iduser', async (req, res) => {
     let respuesta;
     console.log("iduser",req.params.iduser)

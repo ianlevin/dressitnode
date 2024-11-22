@@ -58,7 +58,15 @@ router.post('/register', async (req, res) => {
     }else{
         respuesta = res.status(500).json({ message:'Error interno.'});
     }
+});
+
+router.post('/post-to-history/:idUser/:idPost', async (req, res) => {
+    let response;
+    response = await svc.postToHistory(req.params.idPost, req.params.idUser);
+    response = res.status(201).send('Post guardada en el historial');
+    return response;
 })
+
 router.post('/google-login', async (req, res) => {
     const { tokenId, googleId, email, name, imageUrl } = req.body;
 
