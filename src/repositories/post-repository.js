@@ -224,4 +224,33 @@ export default class WearRepository {
 
         return result.recordset;
     }
+    getUserHistory = async (idUser) => {
+        let pool = await poolPromise;
+        let result = await pool.request()
+            .input('idUser', sql.Int, idUser)
+            .query(`
+                SELECT TOP 5 *
+                FROM History
+                WHERE idUser = @idUser AND (blocked IS NULL OR blocked = 0)
+                ORDER BY id DESC
+            `);
+        return result.recordset;
+    };
+    
+    blockHistoryItem = async (id) => {
+        let pool = await poolPromise;
+        const request = new sql.Request(pool);
+    
+        request.input('id', sql.Int, id);
+    
+        const result = await request.query(`
+            UPDATE dbo.History
+            SET blocked = 1
+            WHERE id = @id AND (blocked IS NULL OR blocked = 0);
+        `);
+    
+        return result.rowsAffected[0] > 0;
+    };
+    
+    
 }
