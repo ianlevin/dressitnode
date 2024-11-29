@@ -48,10 +48,10 @@ export default class WearService {
         return returnArray;
     }
     getUserHistory = async (idUser) => {
-    const repo = new PostRepository();
-    return await repo.getUserHistory(idUser);
+        const repo = new PostRepository();
+        return await repo.getUserHistory(idUser);
     };
-
+    
     blockHistoryItem = async (id) => {
         const repo = new PostRepository();
         const result = await repo.blockHistoryItem(id);
