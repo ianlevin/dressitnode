@@ -47,7 +47,7 @@ router.get('/getUserPosts/:idUser', async (req, res) => {
     return respuesta;
 });
 
-router.put('/history/blocked/:id', async (req, res) => {
+router.put('/history/block/:id', async (req, res) => {
     let respuesta;
     try {
         const id = req.params.id;
@@ -109,17 +109,27 @@ router.get('/brand/:username/:offset/:limit', async (req, res) => {
 });
 
 router.get('/:id/:iduser', async (req, res) => {
-    let respuesta;
-    console.log('id',req.params.id,'iduser',req.params.iduser)
-    const returnArray = await svcw.getByIdAsync("Posts",req.params.id,req.params.iduser);
-    if (returnArray != null){
-        respuesta = res.status(200).json(returnArray);
+    try {
+        const { id, iduser } = req.params;
+        console.log('ID:', id, 'ID User:', iduser);
+
+        if (!id || isNaN(id)) {
+            return res.status(400).send('ID inválido.');
+        }
+
+        const returnArray = await svcw.getByIdAsync("Posts", id, iduser);
+        if (returnArray != null) {
+            res.status(200).json(returnArray);
+        } else {
+            res.status(404).send('No se encontró el registro.');
+        }
+    } catch (error) {
+        console.error('Error al obtener por ID:', error);
+        res.status(500).send('Error interno.');
     }
-    else {
-        respuesta = res.status(500).send('Error interno.');
-    }
-    return respuesta;
 });
+
+
 
 
 
