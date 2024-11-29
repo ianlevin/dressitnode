@@ -58,9 +58,7 @@ router.post("/post", fileUpload, async (req, res) => {
         const backgroundFileName = backgroundFile.filename;
 
         // Lógica para procesar la imagen, por ejemplo, enviarla a otro servicio
-        console.log(`http://34.16.216.43:8000/?background_url=https://example.com/images/${backgroundFileName}&garment_url=${garmentUrl}`)
-        const response = await fetch(`http://34.16.216.43:8000/?background_url=https://example.com/images/${backgroundFileName}&garment_url=${garmentUrl}`);
-
+        const response = await fetch(`http://127.0.0.1:8000/?background_url= https://b3a2-2800-40-39-4dc9-3906-cf62-7a7c-bbbf.ngrok-free.app/images/${backgroundFileName}&garment_url=${garmentUrl}`);
         if (response.ok) {
             const contentType = response.headers.get('content-type');
             res.setHeader('Content-Type', contentType);

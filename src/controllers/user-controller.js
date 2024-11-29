@@ -53,6 +53,7 @@ router.post('/register', async (req, res) => {
         return res.status(400).json({ message: 'Ya hay un user con ese nombre' });
     }
     const returnArray = await svc.Register(user);
+
     if(returnArray.length == 1){
         respuesta = res.status(200).json({ message:'Se ha creado correctamente'});
     }else{

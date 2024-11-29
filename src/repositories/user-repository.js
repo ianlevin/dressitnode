@@ -8,11 +8,12 @@ export default class UserRepository{
         let result = await pool.request()
         .input("pusername",sql.VarChar,user.username)
         .input("ppassword",sql.VarChar,user.pass)
-        .query("SELECT username,email,pfp from USERS where username = @pusername and password = @ppassword")
+        .query("SELECT id,username,email,pfp from USERS where username = @pusername and password = @ppassword")
         return result.recordset
     }
     Register = async (user) => {
         let pool = await sql.connect(config);
+        console.log(user)
         let result = await pool.request()
         .input('pusername'  , sql.VarChar, user.username )
         .input('ppassword'  , sql.VarChar, user.pass )

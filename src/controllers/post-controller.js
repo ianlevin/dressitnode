@@ -91,7 +91,7 @@ router.get('/brand/:username/:offset/:limit', async (req, res) => {
 
 router.get('/:id/:iduser', async (req, res) => {
     let respuesta;
-    console.log("iduser",req.params.iduser)
+    console.log(req.params.id,req.params.iduser)
     const returnArray = await svcw.getByIdAsync("Posts",req.params.id,req.params.iduser);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
