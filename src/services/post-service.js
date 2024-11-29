@@ -50,7 +50,7 @@ export default class WearService {
     getUserHistory = async (idUser) => {
     const repo = new PostRepository();
     return await repo.getUserHistory(idUser);
-};
+    };
 
     blockHistoryItem = async (id) => {
         const repo = new PostRepository();
@@ -58,5 +58,9 @@ export default class WearService {
         return result;
     };
 
-
+    getUserPosts = async (iduser) => {
+        const repo = new PostRepository();
+        const returnArray = await repo.getUserPosts(iduser);
+        return returnArray;
+    }
 }

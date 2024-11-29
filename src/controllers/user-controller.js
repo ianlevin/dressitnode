@@ -66,7 +66,7 @@ router.post('/post-to-history/:idUser/:idPost', async (req, res) => {
     response = await svc.postToHistory(req.params.idPost, req.params.idUser);
     response = res.status(201).send('Post guardada en el historial');
     return response;
-})
+});
 
 router.post('/google-login', async (req, res) => {
     const { tokenId, googleId, email, name, imageUrl } = req.body;

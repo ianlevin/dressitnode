@@ -252,5 +252,15 @@ export default class WearRepository {
         return result.rowsAffected[0] > 0;
     };
     
-    
+    getUserPosts = async (iduser) => {
+        let pool = await poolPromise;
+        let result = await pool.request()
+            .input('idUser', sql.Int, iduser)
+            .query(`
+                SELECT * FROM Posts p
+                JOIN PostsXUser pu ON p.id = pu.idPost
+                WHERE pu.idUser = @idUser;
+            `);
+        return result.recordset;
+    }
 }

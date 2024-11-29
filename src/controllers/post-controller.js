@@ -28,6 +28,25 @@ router.get('/history/:iduser', async (req, res) => {
     return respuesta;
 });
 
+router.get('/getUserPosts/:idUser', async (req, res) => {
+    let respuesta;
+    try {
+        const iduser = req.params.idUser;
+        const returnArray = await svcw.getUserPosts(iduser);
+
+        if (returnArray != null) {
+            respuesta = res.status(200).json(returnArray);
+        } else {
+            respuesta = res.status(404).send('No se encontró historial para el usuario especificado.');
+        }
+    } catch (error) {
+        console.error('Error al obtener historial:', error);
+        respuesta = res.status(500).send('Error interno.');
+    }
+
+    return respuesta;
+});
+
 router.put('/history/blocked/:id', async (req, res) => {
     let respuesta;
     try {
@@ -91,7 +110,7 @@ router.get('/brand/:username/:offset/:limit', async (req, res) => {
 
 router.get('/:id/:iduser', async (req, res) => {
     let respuesta;
-    console.log(req.params.id,req.params.iduser)
+    console.log('id',req.params.id,'iduser',req.params.iduser)
     const returnArray = await svcw.getByIdAsync("Posts",req.params.id,req.params.iduser);
     if (returnArray != null){
         respuesta = res.status(200).json(returnArray);
