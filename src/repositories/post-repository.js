@@ -139,9 +139,9 @@ export default class WearRepository {
             END
             `);
         }
-        
-            
-        
+
+
+
         const prendas = await pool.request().query(
             `SELECT TOP ${limit} Posts.*
                 FROM Posts
@@ -236,19 +236,19 @@ export default class WearRepository {
             `);
         return result.recordset;
     };
-    
+
     blockHistoryItem = async (id) => {
         let pool = await poolPromise;
         const request = new sql.Request(pool);
-    
+
         request.input('id', sql.Int, id);
-    
+
         const result = await request.query(`
             UPDATE dbo.History
             SET blocked = 1
             WHERE id = @id AND (blocked IS NULL OR blocked = 0);
         `);
-    
+
         return result.rowsAffected[0] > 0;
     };
     
