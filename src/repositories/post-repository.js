@@ -1,3 +1,4 @@
+import { query } from "express";
 import config from "../configs/db-config.js";
 import sql from "mssql";
 
@@ -107,11 +108,18 @@ export default class WearRepository {
         return result.recordset;
     }
     getSearchAsync = async (buscado,id,limit) => {
+
+        console.log("search?");
+
         let pool = await poolPromise;
         let result;
-        result = await pool.request().query(`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`)
+        var query1=`select * from Posts where name like '% ${buscado} %' or name like '% ${buscado}' or name like '${buscado} %' or description like '% ${buscado} %' or description like '${buscado} %' or description like '% ${buscado}'`;
+        console.log(query1);
+
+        result = await pool.request().query(query1)
         if(result.recordset.length >0){
-            result = await pool.request().query(`
+
+            const query=`
             IF NOT EXISTS (
                 SELECT 1
                 FROM dbo.History
@@ -137,21 +145,28 @@ export default class WearRepository {
                     VALUES (${id}, '${buscado}');
                 END
             END
-            `);
+            `;
+            console.log(query);
+
+            result = await pool.request().query(query);
         }
 
 
 
+        const queryPrendas= `SELECT TOP ${limit} Posts.*
+        FROM Posts
+        LEFT JOIN ColorTag ON Posts.id = ColorTag.idPost
+        LEFT JOIN Colors ON ColorTag.idColor = Colors.id
+        WHERE 
+            Posts.name LIKE '%${buscado}%' OR 
+            Posts.description LIKE '%${buscado}%' OR 
+            Colors.nombre LIKE '%${buscado}%';
+`;
+
+console.log(queryPrendas);
+
         const prendas = await pool.request().query(
-            `SELECT TOP ${limit} Posts.*
-                FROM Posts
-                LEFT JOIN ColorTag ON Posts.id = ColorTag.idPost
-                LEFT JOIN Colors ON ColorTag.idColor = Colors.id
-                WHERE 
-                    Posts.name LIKE '%${buscado}%' OR 
-                    Posts.description LIKE '%${buscado}%' OR 
-                    Colors.nombre LIKE '%${buscado}%';
-        `);
+           queryPrendas);
         const marcas = await pool.request().query(`select top 5 * from Users where username like '%${buscado}%'`)
 
         const resultado ={
