@@ -129,30 +129,6 @@ router.get('/:id/:iduser', async (req, res) => {
     }
 });
 
-
-router.post('/history/add', async (req, res) => {
-    const { idUser, searchTerm } = req.body;
-
-    if (!idUser || !searchTerm) {
-        return res.status(400).send('Faltan parámetros obligatorios.');
-    }
-
-    try {
-        const added = await svcw.addToHistory(idUser, searchTerm);
-
-        if (added) {
-            res.status(200).send('Búsqueda agregada al historial correctamente.');
-        } else {
-            res.status(400).send('No se pudo agregar la búsqueda al historial.');
-        }
-    } catch (error) {
-        console.error('Error al agregar al historial:', error);
-        res.status(500).send('Error interno del servidor.');
-    }
-});
-
-
-
 router.post('', async (req, res) => {
     let respuesta;
     let user = new User(undefined,req.body.username, req.body.password, req.body.email, req.body.pfp, req.body.gender)

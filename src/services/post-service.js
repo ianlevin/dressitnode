@@ -63,10 +63,4 @@ export default class WearService {
         const returnArray = await repo.getUserPosts(iduser);
         return returnArray;
     }
-
-    addToHistory = async (idUser, searchTerm) => {
-        const repo = new PostRepository();
-        return await repo.addToHistory(idUser, searchTerm);
-    };
-    
 }

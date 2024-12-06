@@ -263,40 +263,4 @@ export default class WearRepository {
             `);
         return result.recordset;
     }
-
-    addToHistory = async (idUser, searchTerm) => {
-        let pool = await poolPromise;
-        const request = new sql.Request(pool);
-    
-        // Evitar duplicados y manejar el historial con un límite de 20 entradas
-        await request.input('idUser', sql.Int, idUser);
-        await request.input('searchTerm', sql.VarChar, searchTerm);
-    
-        const result = await request.query(`
-            IF NOT EXISTS (
-                SELECT 1
-                FROM dbo.History
-                WHERE idUser = @idUser AND search = @searchTerm
-            )
-            BEGIN
-                -- Limitar el historial a 20 entradas
-                IF (SELECT COUNT(*) FROM dbo.History WHERE idUser = @idUser) >= 20
-                BEGIN
-                    DELETE FROM dbo.History
-                    WHERE id = (
-                        SELECT TOP 1 id
-                        FROM dbo.History
-                        WHERE idUser = @idUser
-                        ORDER BY id ASC
-                    );
-                END
-    
-                INSERT INTO dbo.History (idUser, search)
-                VALUES (@idUser, @searchTerm);
-            END
-        `);
-    
-        return result.rowsAffected[0] > 0;
-    };
-    
 }
