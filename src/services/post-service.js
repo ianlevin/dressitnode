@@ -25,6 +25,11 @@ export default class WearService {
         return returnArray;
     }
 
+    addSearchToHistory = async (idUser, searchTerm) => {
+        const repo = new PostRepository();
+        return await repo.addSearchToHistory(idUser, searchTerm);
+    };
+    
     getSearchAsync = async (buscado,id,limit) => {
         const repo = new PostRepository();
         let returnArray = await repo.getSearchAsync(buscado,id,limit);

@@ -47,7 +47,7 @@ router.get('/getUserPosts/:idUser', async (req, res) => {
     return respuesta;
 });
 
-router.put('/history/block/:id', async (req, res) => {
+router.delete('/history/:id', async (req, res) => {
     let respuesta;
     try {
         const id = req.params.id;
@@ -151,6 +151,28 @@ router.get('/search/:buscado/:id/:limit', async (req, res) => {
     }
     return respuesta;
 });
+
+router.get('/history/add/:searchTerm/:idUser', async (req, res) => {
+    const { searchTerm, idUser } = req.params;
+
+    if (!searchTerm || !idUser) {
+        return res.status(400).send('Faltan parámetros necesarios.');
+    }
+
+    try {
+        // Llamar al servicio para agregar al historial
+        const result = await svcw.addSearchToHistory(idUser, searchTerm);
+        if (result) {
+            res.status(201).send('Búsqueda agregada al historial.');
+        } else {
+            res.status(500).send('No se pudo agregar la búsqueda al historial.');
+        }
+    } catch (error) {
+        console.error('Error al agregar búsqueda al historial:', error);
+        res.status(500).send('Error interno del servidor.');
+    }
+});
+
 router.get('/:buscado/:offset/:limit', async (req, res) => {
     let respuesta;
     const returnArray = await svcw.getOffsetAsync(req.params.buscado,req.params.offset,req.params.limit);

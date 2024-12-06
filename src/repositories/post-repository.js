@@ -5,6 +5,7 @@ import sql from "mssql";
 let poolPromise = sql.connect(config);
 
 export default class WearRepository {
+    
     getFilterAsync = async (filters) => {
         let { generos, precios, colores, prendas, offset, limit } = filters;
         let sqlquery = '1=1'; // Siempre verdadero para evitar problemas de WHERE vacío
@@ -75,6 +76,39 @@ export default class WearRepository {
 
         return result.recordset;
     }
+
+    addSearchToHistory = async (idUser, searchTerm) => {
+        const pool = await poolPromise;
+        const request = new sql.Request(pool);
+    
+        try {
+            // Definir las variables antes de cualquier consulta
+            request.input('idUser', sql.Int, idUser);
+            request.input('search', sql.NVarChar, searchTerm);
+    
+            // Validar si ya existe una búsqueda igual para el usuario
+            const existingSearch = await request.query(`
+                SELECT 1 FROM dbo.History
+                WHERE idUser = @idUser AND search = @search
+            `);
+    
+            if (existingSearch.recordset.length === 0) {
+                // Insertar la nueva búsqueda si no existe
+                await request.query(`
+                    INSERT INTO dbo.History (idUser, search)
+                    VALUES (@idUser, @search)
+                `);
+                return true;
+            }
+    
+            return false; // No se insertó porque ya existía
+        } catch (error) {
+            console.error('Error al agregar búsqueda al historial:', error);
+            throw error;
+        }
+    };
+    
+    
 
     getByIdAsync = async (table_name, id, id_user) => {
         let pool = await poolPromise;
@@ -246,7 +280,7 @@ console.log(queryPrendas);
             .query(`
                 SELECT TOP 5 *
                 FROM History
-                WHERE idUser = @idUser AND (blocked IS NULL OR blocked = 0)
+                WHERE idUser = @idUser
                 ORDER BY id DESC
             `);
         return result.recordset;
@@ -259,9 +293,8 @@ console.log(queryPrendas);
         request.input('id', sql.Int, id);
 
         const result = await request.query(`
-            UPDATE dbo.History
-            SET blocked = 1
-            WHERE id = @id AND (blocked IS NULL OR blocked = 0);
+        DELETE FROM dbo.History
+        WHERE id = @id;
         `);
 
         return result.rowsAffected[0] > 0;
